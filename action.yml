@@ -1,5 +1,6 @@
 name: ASTDiff Bot
 description: A GitHub Action to run RefactoringMiner and upload diff results as a .zip.
+icon: anchor
 inputs:
   OAuthToken:
     description: 'OAuth Token for authentication'
