@@ -54,7 +54,7 @@ runs:
             refactoringminer diff --url \"${{ inputs.URL }}\" -e && \
             unzip /opt/refactoringminer/lib/RefactoringMiner-DockerBuild.jar -d /tmp/refactoringminer &&
             mkdir -p /diff/exported/web && \
-            cp -r /tmp/refactoringminer/web /diff/exported/web/resources
+            cp -r /tmp/refactoringminer/web /diff/exported/web/resources"
       shell: bash 
 
     # Step 6: Create zip artifact of diff results
