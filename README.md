@@ -111,5 +111,5 @@ jobs:
 ```
 
 And then you can trigger the bot with @diff comamnd in the issues:
-![Description of Image](./imgs/diffbot.png)
+![Bot responding with artifact link](./imgs/diffbot.png)
 
