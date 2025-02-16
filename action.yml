@@ -10,18 +10,71 @@ inputs:
 outputs:
   artifact_url:
     description: 'URL to download the generated diff artifact'
+    value: ${{ steps.step_name.outputs.artifact_url }}
 
 runs:
-  using: 'docker'
-  image: 'docker://tsantalis/refactoringminer:latest'
-  entrypoint: '/bin/sh'
-  args:
-    - '-c'
-    - |
-        refactoringminer diff --url "${{ inputs.URL }}" -e && \
-        unzip /opt/refactoringminer/lib/RefactoringMiner-DockerBuild.jar -d /tmp/refactoringminer && \
-        mkdir -p /diff/exported/web && \
-        cp -r /tmp/refactoringminer/web /diff/exported/web/resources && \
-        cd /diff/exported && \
-        zip -r /tmp/diff-results.zip . && \
-        echo "::set-output name=artifact_url::/tmp/diff-results.zip"
+  using: 'composite'
+  steps:
+    # Step 1: Checkout the repository (in case we need it for any reason)
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Step 2: Pull the latest RefactoringMiner Docker image from Docker Hub
+    - name: Pull RefactoringMiner Docker image
+      run: |
+        docker pull tsantalis/refactoringminer:latest
+      shell: bash 
+
+
+    # Step 2: Checkout the another repository and checkout a specific branch
+    - name: Checkout RefactoringMiner repository
+      run: |
+        git clone https://github.com/pouryafard75/RM-ASTDiff/
+        cd RM-ASTDiff
+        git checkout export
+      shell: bash
+
+    # Step 3: Build RefactoringMiner Docker image from the other repository
+    - name: Build RefactoringMiner Docker image
+      run: |
+        cd refactoringminer
+        docker build -f docker/Dockerfile -t tsantalis/refactoringminer:latest .
+      shell: bash  # Explicitly set the shell to bash
+
+
+    # Step 3: Run Docker container with RefactoringMiner
+    - name: Run RefactoringMiner to generate diff
+      run: |
+        docker run \
+          --env OAuthToken="${{ inputs.OAuthToken }}" \
+          -v ${{ github.workspace }}/exportedFromDocker:/diff/exported \
+          --entrypoint "" \
+          tsantalis/refactoringminer:latest /bin/sh -c "\
+            refactoringminer diff --url \"${{ inputs.URL }}\" -e && \
+            unzip /opt/refactoringminer/lib/RefactoringMiner-DockerBuild.jar -d /tmp/refactoringminer && \
+            mkdir -p /diff/exported/web && \
+            cp -r /tmp/refactoringminer/web /diff/exported/web/resources"
+      shell: bash 
+
+    # Step 4: Create zip artifact of diff results
+    - name: Create zip artifact of diff results
+      run: |
+        cd exportedFromDocker && zip -r diff_results.zip .
+      shell: bash 
+
+    # Step 5: Upload the zip artifact as an output
+    - name: Upload diff results as artifact
+      id: upload_artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: diff_results
+        path: exportedFromDocker/diff_results.zip
+      shell: bash 
+
+    # Step 6: Set output variable for artifact URL
+    - name: Set artifact URL output
+      id: artifact_url
+      run: echo "artifact_url=${{ steps.upload_artifact.outputs.url }}" >> $GITHUB_ENV
+      shell: bash 
+
+
