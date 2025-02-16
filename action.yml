@@ -31,9 +31,8 @@ runs:
     # Step 3: Clone the RefactoringMiner repository and checkout branch
     - name: Clone RefactoringMiner repository
       run: |
-        git clone https://github.com/pouryafard75/RM-ASTDiff.git --shallow
-        cd RM-ASTDiff
-        git checkout export
+        git clone --single-branch --branch=export https://github.com/pouryafard75/RM-ASTDiff.git
+      
       shell: bash
 
     # Step 4: Build RefactoringMiner Docker image from the repository
