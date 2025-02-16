@@ -81,14 +81,16 @@ jobs:
             } else {
               core.setOutput('triggered', 'false');
             }
+
+      # Step 1: Run the exporter
       - name: Running the RM action exporter
-        uses: pouryafard75/refactoringminer-astdiff-exporter
-@v0.1.15
+        uses: pouryafard75/refactoringminer-astdiff-exporter@v0.2
         id: run_rm_exporter 
         with:
           OAuthToken: ${{ secrets.OAUTHTOKEN }}
           URL: "${{ steps.trigger.outputs.url }}"
 
+      # Step 2: Reply to the user with artifact url
       - name: Reply 
         if: ${{ steps.trigger.outputs.triggered == 'true' }}
         uses: actions/github-script@v7
