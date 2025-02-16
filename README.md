@@ -1,11 +1,11 @@
 # Refactoringminer-ASTDiff-Exporter
 
 
-**Refactoringminer-ASTDiff-Exporter** is a GitHub Action that runs RefactoringMiner to generate and upload a diff of refactoring results as a .zip file. This tool can be used for analyzing code changes and refactoring between versions in a GitHub repository.
+**Refactoringminer-ASTDiff-Exporter** is a GitHub Action that runs RefactoringMiner to generate AST Diff and upload the artifact as .zip file. This tool can be used for analyzing code changes and refactoring between versions in a GitHub repository.
 
 ## Features
 
-- Runs RefactoringMiner to generate a diff of the repository.
+- Executes RefactoringMiner to generate an AST Diff for any commit or pull request.
 - Uploads the diff results as a `.zip` artifact.
 - Easy to integrate into your GitHub workflows.
 
@@ -107,5 +107,5 @@ jobs:
               body: `👋 You triggered the bot with the URL: \`${url}\`. You can download it here: [Download Artifact](${artifact_url}).`
               
             })
-
+            
 ```
