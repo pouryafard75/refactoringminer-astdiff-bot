@@ -39,11 +39,69 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Run ASTDiff Bot
-        uses: pouryafard75/astdiff-bot@v1
+        uses: pouryafard75/refactoringminer-astdiff-exporter@v1
         with:
           OAuthToken: ${{ secrets.GITHUB_TOKEN }}
           URL: https://github.com/your-username/your-repository/commit/SHA
+
+```
+
+## Interesting Use Cases
+- Creating a diff-bot that monitors issues (or even PRs) and generates the AST Diff as an artifact.
+
+Below is an example of a bot that listens for the `@diff` keyword in issue comments and generates the corresponding artifact.
+
+```yaml
+name: ASTDiff Bot
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      # Step 0: Check for @diff trigger and get the URL command
+      - name: Check for @diff trigger
+        id: trigger
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const commentBody = context.payload.comment.body;
+            const regex = /@diff\s+(\S+)/;  // Match the next non-whitespace string after @diff
+            const match = commentBody.match(regex);
+            if (match) {
+              core.setOutput('triggered', 'true');
+              core.setOutput('url', match[1].trim()); 
+            } else {
+              core.setOutput('triggered', 'false');
+            }
+      - name: Running the RM action exporter
+        uses: pouryafard75/refactoringminer-astdiff-exporter
+@v0.1.15
+        id: run_rm_exporter 
+        with:
+          OAuthToken: ${{ secrets.OAUTHTOKEN }}
+          URL: "${{ steps.trigger.outputs.url }}"
+
+      - name: Reply 
+        if: ${{ steps.trigger.outputs.triggered == 'true' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ steps.trigger.outputs.url }}';
+            const artifact_url = '${{ steps.run_rm_exporter.outputs.artifact_url }}'; // Add artifact_url output
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `👋 You triggered the bot with the URL: \`${url}\`. You can download it here: [Download Artifact](${artifact_url}).`
+              
+            })
+
+```
