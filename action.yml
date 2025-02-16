@@ -76,3 +76,8 @@ runs:
     - name: Set artifact URL output
       run: echo "artifact_url=${{ steps.upload_artifact.outputs.artifact-url }}" >> $GITHUB_ENV
       shell: bash 
+    
+    # Step 9: Set output variable for artifact URL
+    - name: Set artifact URL output
+      run: echo "::set-output name=artifact_url::${{ steps.upload_artifact.outputs.artifact-url }}"
+      shell: bash
