@@ -15,7 +15,7 @@
 
 | Name       | Description                           | Required |
 |------------|---------------------------------------|----------|
-| `OAuthToken` | OAuth Token for authentication        | Yes      |
+| `OAuthToken` | Github OAuthToken for authentication        | Yes      |
 | `URL`       | URL of the commit for the diff | Yes      |
 
 ### Outputs
