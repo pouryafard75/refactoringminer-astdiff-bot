@@ -23,6 +23,8 @@
 | Name         | Description                                     |
 |--------------|-------------------------------------------------|
 | `artifact_url` | URL to download the generated diff artifact   |
+ 
+Note: You can generate an OAuth token in GitHub Settings -> Developer settings -> Personal access tokens.
 
 ### Example Workflow
 
