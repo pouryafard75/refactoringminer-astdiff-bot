@@ -31,7 +31,7 @@ runs:
     # Step 3: Clone the RefactoringMiner repository and checkout branch
     - name: Clone RefactoringMiner repository
       run: |
-        git clone https://github.com/pouryafard75/RM-ASTDiff.git
+        git clone https://github.com/pouryafard75/RM-ASTDiff.git --shallow
         cd RM-ASTDiff
         git checkout export
       shell: bash
@@ -50,10 +50,12 @@ runs:
         docker run \
           --env OAuthToken="${{ inputs.OAuthToken }}" \
           -v ${{ github.workspace }}/exportedFromDocker:/diff/exported \
+          --entrypoint "" \
           tsantalis/refactoringminer:latest /bin/sh -c "\
             refactoringminer diff --url \"${{ inputs.URL }}\" -e && \
+            unzip /opt/refactoringminer/lib/RefactoringMiner-DockerBuild.jar -d /tmp/refactoringminer &&
             mkdir -p /diff/exported/web && \
-            cp -r /opt/refactoringminer/web /diff/exported/web/resources"
+            cp -r /tmp/refactoringminer/web /diff/exported/web/resources
       shell: bash 
 
     # Step 6: Create zip artifact of diff results
