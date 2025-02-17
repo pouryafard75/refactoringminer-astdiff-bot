@@ -23,24 +23,12 @@ runs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # # Step 2: Pull the latest RefactoringMiner Docker image from Docker Hub
-    # - name: Pull RefactoringMiner Docker image
-    #   run: docker pull tsantalis/refactoringminer:latest
-    #   shell: bash 
-
-    # Step 3: Clone the RefactoringMiner repository and checkout branch
-    - name: Clone RefactoringMiner repository
-      run: |
-        git clone --single-branch --branch=export https://github.com/pouryafard75/RM-ASTDiff.git
-      
-      shell: bash
-
-    # Step 4: Build RefactoringMiner Docker image from the repository
-    - name: Build RefactoringMiner Docker image
-      run: |
-        cd RM-ASTDiff 
-        docker build -f docker/Dockerfile -t tsantalis/refactoringminer:latest .
+    # Step 2: Pull the latest RefactoringMiner Docker image from Docker Hub
+    - name: Pull RefactoringMiner Docker image
+      run: docker pull tsantalis/refactoringminer:latest
       shell: bash 
+
+    # No Step 4
 
     # Step 5: Run Docker container with RefactoringMiner
     - name: Run RefactoringMiner to generate diff
