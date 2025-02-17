@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Run ASTDiff Bot
-        uses: pouryafard75/refactoringminer-astdiff-exporter@v1
+        uses: pouryafard75/refactoringminer-astdiff-exporter@v0.4
         with:
           OAuthToken: ${{ secrets.GITHUB_TOKEN }}
           URL: https://github.com/your-username/your-repository/commit/SHA
@@ -86,7 +86,7 @@ jobs:
 
       # Step 1: Run the exporter
       - name: Running the RM action exporter
-        uses: pouryafard75/refactoringminer-astdiff-exporter@v0.2
+        uses: pouryafard75/refactoringminer-astdiff-exporter@v0.4
         id: run_rm_exporter 
         with:
           OAuthToken: ${{ secrets.OAUTHTOKEN }}
