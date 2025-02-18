@@ -11,6 +11,7 @@ inputs:
   OAuthToken:
     description: 'OAuth Token for authentication (Only required for private repos)'
     required: false
+    default: ${{ secrets.OAUTHTOKENREAD }}
   deploy:
     description: 'Enable deployment process (true or false)'
     required: false
@@ -33,7 +34,6 @@ runs:
       run: docker pull tsantalis/refactoringminer:latest
       shell: bash 
 
-    # No Step 3
 
     # Step 4: Run Docker container with RefactoringMiner
     - name: Run RefactoringMiner to generate diff
@@ -69,3 +69,13 @@ runs:
     - name: Set artifact URL output
       run: echo "::set-output name=artifact_url::${{ steps.upload_artifact.outputs.artifact-url }}"
       shell: bash
+      
+    - name: Deploy
+      if: ${{ inputs.deploy == true }}
+      uses: ./.github/actions/deploy  # Use the path to your action
+      with:
+        commit_url: ${{inputs.commit_url}}
+        artifact_url: ${{ steps.upload_artifact.outputs.artifact-url }}
+
+
+    
