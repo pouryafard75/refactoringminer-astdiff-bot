@@ -1,0 +1,52 @@
+description: "Deploys an artifact to the gh-pages branch"
+inputs:
+  commit_url: 
+    description: "Commit/PR URL (Required to resolve the path)"
+    required: true
+  artifact_url:
+    description: "RefactoringMiner Artifact Url (url to the .zip file)"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout gh-pages branch
+      uses: actions/checkout@v4
+      with:
+        token: ${{ inputs.OAUTHTOKENWRITE }}
+        ref: gh-pages
+        path: cache
+
+    - name: Path extraction
+      uses: actions/github-script@v6
+      id: path_extraction
+      with:
+          script: |
+            const url = process.env.URL;
+            // remove "https://github.com/" and everything after "#"
+            const path = url.replace("https://github.com/", "").split("#")[0];          
+            core.setOutput('path', path);
+
+
+    - name: Prepare deployment
+      shell: bash
+      run: |
+        CACHE_DIR=${{ steps.path_extraction.outputs.path }}
+        mkdir -p "$CACHE_DIR"
+        cd "$CACHE_DIR"
+        curl -o diff_results.zip ${{inputs.artifact_url}}
+        unzip diff_results.zip
+        rm diff_results.zip
+        rm -rf json
+        mv web/* .
+        rmdir web
+        ls
+
+    - name: Commit and push changes (Deploy)
+      uses: EndBug/add-and-commit@v9
+      with:
+        cwd: .
+        author_name: "GitHub Actions Bot"
+        author_email: "github-actions-bot@example.com"
+        message: "Deploy update to GitHub Pages + ${{ inputs.commit_url }}"
+        push: "origin gh-pages --set-upstream --force"
