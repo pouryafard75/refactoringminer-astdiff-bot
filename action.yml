@@ -5,12 +5,17 @@ branding:
   color: blue
 
 inputs:
-  OAuthToken:
-    description: 'OAuth Token for authentication'
-    required: true
   URL:
     description: 'URL of the repository for the diff operation'
     required: true
+  OAuthToken:
+    description: 'OAuth Token for authentication (Only required for private repos)'
+    required: false
+  deploy:
+    description: 'Enable deployment process (true or false)'
+    required: false
+    default: "false"
+  
 outputs:
   artifact_url:
     description: 'URL to download the generated diff artifact'
@@ -28,9 +33,9 @@ runs:
       run: docker pull tsantalis/refactoringminer:latest
       shell: bash 
 
-    # No Step 4
+    # No Step 3
 
-    # Step 5: Run Docker container with RefactoringMiner
+    # Step 4: Run Docker container with RefactoringMiner
     - name: Run RefactoringMiner to generate diff
       run: |
         mkdir -p ${{ github.workspace }}/exportedFromDocker
@@ -45,27 +50,22 @@ runs:
             cp -r /tmp/refactoringminer/web /diff/exported/web/resources"
       shell: bash 
 
-    # Step 6: Create zip artifact of diff results
+    # Step 5: Create zip artifact of diff results
     - name: Create zip artifact of diff results
       run: |
         cd ${{ github.workspace }}/exportedFromDocker
         zip -r diff_results.zip .
       shell: bash 
 
-    # Step 7: Upload the zip artifact as an output
+    # Step 6: Upload the zip artifact as an output
     - name: Upload diff results as artifact
       id: upload_artifact
       uses: actions/upload-artifact@v4
       with:
         name: diff_results
-        path: ${{ github.workspace }}/exportedFromDocker/diff_results.zip
-
-    # Step 8: Set output variable for artifact URL
-    - name: Set artifact URL output
-      run: echo "artifact_url=${{ steps.upload_artifact.outputs.artifact-url }}" >> $GITHUB_ENV
-      shell: bash 
+        path: ${{ github.workspace }}/exportedFromDocker/diff_results.zip 
     
-    # Step 9: Set output variable for artifact URL
+    # Step 7: Set output variable for artifact URL
     - name: Set artifact URL output
       run: echo "::set-output name=artifact_url::${{ steps.upload_artifact.outputs.artifact-url }}"
       shell: bash
