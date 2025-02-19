@@ -11,10 +11,11 @@ inputs:
   deploy:
     description: 'Enable deployment process (true or false)'
     required: false
-    default: "false"
   OAuthToken:
     description: 'OAuthToken for read the commit/pr information (Only required for private urls)'
     required: false
+    default: ${{ github.token }}
+
   
   
 outputs:
@@ -37,13 +38,16 @@ runs:
       run: docker pull tsantalis/refactoringminer:latest
       shell: bash 
 
+    - name: experiment
+      run: echo "${{ secrets.OAUTHTOKENREAD }}
+      shell: bash
 
     # Step 4: Run Docker container with RefactoringMiner
     - name: Run RefactoringMiner to generate diff
       run: |
         mkdir -p ${{ github.workspace }}/exportedFromDocker
         docker run \
-          --env OAuthToken="${{ secrets.OAUTHTOKENREAD }}" \
+          --env OAuthToken="${{ inputs.OAUTHTOKENREAD }}" \
           -v ${{ github.workspace }}/exportedFromDocker:/diff/exported \
           --entrypoint "" \
           tsantalis/refactoringminer:latest /bin/sh -c "\
