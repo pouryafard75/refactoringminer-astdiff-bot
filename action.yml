@@ -27,15 +27,17 @@ runs:
   
 
   steps:
-    - name: Set OAuthToken
-      id: set_oauth_token
-      run: |
-        if [ -n "${{ inputs.OAuthToken }}" ]; then
-          echo "OAUTH_TOKEN=${{ inputs.oauthToken }}" >> $GITHUB_ENV
-        else
-          echo "OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }}" >> $GITHUB_ENV
-        fi
-      shell: bash
+
+    
+    # - name: Set OAuthToken
+    #   id: set_oauth_token
+    #   run: |
+    #     if [ -n "${{ inputs.OAuthToken }}" ]; then
+    #       echo "OAUTH_TOKEN=${{ inputs.oauthToken }}" >> $GITHUB_ENV
+    #     else
+    #       echo "OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }}" >> $GITHUB_ENV
+    #     fi
+    #   shell: bash
     
     # Step 1: Checkout the repository (in case we need it for any reason)
     - name: Checkout repository
@@ -52,7 +54,7 @@ runs:
       run: |
         mkdir -p ${{ github.workspace }}/exportedFromDocker
         docker run \
-          --env OAuthToken="${{ inputs.OAuthToken }}" \
+          --env OAuthToken="${{ secrets.OAUTHTOKENREAD }}" \
           -v ${{ github.workspace }}/exportedFromDocker:/diff/exported \
           --entrypoint "" \
           tsantalis/refactoringminer:latest /bin/sh -c "\
