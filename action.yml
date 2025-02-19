@@ -82,13 +82,13 @@ runs:
       run: |
         echo ${{inputs.deploy}}
         echo "\n"
-        echo ${{ inputs.deploy == true }}
+        echo ${{ inputs.deploy == 'true' }}
         echo "\n"
         echo "abalfazl"
       shell: bash
 
     - name: Deploy
-      if: ${{ inputs.deploy == true }}
+      if: ${{ inputs.deploy == 'true' }}
       id: deploy
       uses: ./.github/actions/deploy  # Use the path to your action
       with:
@@ -98,7 +98,7 @@ runs:
         deploy_token: ${{inputs.deployToken}}
 
     - name: Set output from deploy action
-      if: ${{ inputs.deploy == true }}
+      if: ${{ inputs.deploy == 'true' }}
       run: echo "::set-output name=deploy_url::${{ steps.deploy.outputs.deploy_url }}"
       shell: bash
 
