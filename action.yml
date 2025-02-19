@@ -38,10 +38,6 @@ runs:
       run: docker pull tsantalis/refactoringminer:latest
       shell: bash 
 
-    - name: experiment
-      run: echo "${{ secrets.OAUTHTOKENREAD }}
-      shell: bash
-
     # Step 4: Run Docker container with RefactoringMiner
     - name: Run RefactoringMiner to generate diff
       run: |
