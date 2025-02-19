@@ -8,14 +8,14 @@ inputs:
   URL:
     description: 'URL of the repository for the diff operation'
     required: true
-  OAuthToken:
-    description: 'OAuth Token for authentication (Only required for private repos)'
-    required: false
-    default: ${{ secrets.OAUTHTOKENREAD }}
   deploy:
     description: 'Enable deployment process (true or false)'
     required: false
     default: "false"
+  OAuthToken:
+    description: 'OAuthToken for read the commit/pr information (Only required for private urls)'
+    required: false
+  
   
 outputs:
   artifact_url:
@@ -24,7 +24,19 @@ outputs:
 
 runs:
   using: 'composite'
+  
+
   steps:
+    - name: Set OAuthToken
+      id: set_oauth_token
+      run: |
+        if [ -n "${{ inputs.OAuthToken }}" ]; then
+          echo "OAUTH_TOKEN=${{ inputs.oauthToken }}" >> $GITHUB_ENV
+        else
+          echo "OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }}" >> $GITHUB_ENV
+        fi
+      shell: bash
+    
     # Step 1: Checkout the repository (in case we need it for any reason)
     - name: Checkout repository
       uses: actions/checkout@v3
