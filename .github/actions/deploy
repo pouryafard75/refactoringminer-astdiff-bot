@@ -22,9 +22,9 @@ runs:
       id: path_extraction
       with:
           script: |
-            const url = process.env.URL;
+            const url = core.getInput('URL');
             // remove "https://github.com/" and everything after "#"
-            const path = url.replace("https://github.com/", "").split("#")[0];          
+            const path = url.replace("https://github.com/", "").split("#")[0].replace(/\/$/, "");    
             core.setOutput('path', path);
 
 
@@ -50,3 +50,9 @@ runs:
         author_email: "github-actions-bot@example.com"
         message: "Deploy update to GitHub Pages + ${{ inputs.commit_url }}"
         push: "origin gh-pages --set-upstream --force"
+
+    - name: Provide Github pages Url
+      id: output
+      run: |
+        gh_pages_url="https://empiricalseconcordia.github.io/RefactoringMiner-Artifacts/${{ steps.path_extraction.outputs.path }}/lists"
+        echo "::set-output name=deploy_url::$gh_pages_url"
