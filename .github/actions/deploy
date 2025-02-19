@@ -6,6 +6,12 @@ inputs:
   artifact_url:
     description: "RefactoringMiner Artifact Url (url to the .zip file)"
     required: true
+  deploy_prefix':
+    description: "Deploy prefix"
+    required: true
+  deploy_token:
+    description: "Token with write permisisons to deploy"
+    required: true
 
 runs:
   using: "composite"
@@ -13,7 +19,7 @@ runs:
     - name: Checkout gh-pages branch
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.OAUTHTOKENWRITE }}
+        token: ${{ input.deploy_token }}
         ref: gh-pages
         path: cache
 
@@ -24,7 +30,8 @@ runs:
           script: |
             const url = core.getInput('URL');
             // remove "https://github.com/" and everything after "#"
-            const path = url.replace("https://github.com/", "").split("#")[0].replace(/\/$/, "");    
+            const basic_path = url.replace("https://github.com/", "").split("#")[0].replace(/\/$/, "");    
+            const path = core.getInput('deploy_prefix') + basic_path; // Add the prefix to the path
             core.setOutput('path', path);
 
 

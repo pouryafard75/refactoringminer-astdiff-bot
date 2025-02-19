@@ -11,12 +11,17 @@ inputs:
   deploy:
     description: 'Enable deployment process (true or false)'
     required: false
+  deployToken:
+    description: 'OAuthToken for writing into gh pages'
+    required: false
+  deployPrefix:
+    description: 'Prefix Path of deployment'
+    required: false
+    default: "cache"
   OAuthToken:
     description: 'OAuthToken for read the commit/pr information (Only required for private urls)'
     required: false
     default: ${{ github.token }}
-
-  
   
 outputs:
   artifact_url:
@@ -73,6 +78,15 @@ runs:
       run: echo "::set-output name=artifact_url::${{ steps.upload_artifact.outputs.artifact-url }}"
       shell: bash
       
+    - name: Debug
+      run: |
+        echo ${{inputs.deploy}}
+        echo "\n"
+        echo ${{ inputs.deploy == true }}
+        echo "\n"
+        echo "abalfazl"
+      shell: bash
+
     - name: Deploy
       if: ${{ inputs.deploy == true }}
       id: deploy
@@ -80,6 +94,8 @@ runs:
       with:
         commit_url: ${{inputs.commit_url}}
         artifact_url: ${{ steps.upload_artifact.outputs.artifact-url }}
+        deploy_prefix: ${{inputs.deployPrefix}}
+        deploy_token: ${{inputs.deployToken}}
 
     - name: Set output from deploy action
       if: ${{ inputs.deploy == true }}
