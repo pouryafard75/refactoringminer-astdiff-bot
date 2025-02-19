@@ -85,21 +85,61 @@ runs:
         echo ${{ inputs.deploy == 'true' }}
         echo "\n"
         echo "abalfazl"
-      shell: bash
+      shell: bash  
 
-    - name: Deploy
+    - name: Path extraction
       if: ${{ inputs.deploy == 'true' }}
-      id: deploy
-      uses: ./.github/actions/deploy  # Use the path to your action
+      uses: actions/github-script@v6
+      id: path_extraction
       with:
-        commit_url: ${{inputs.commit_url}}
-        artifact_url: ${{ steps.upload_artifact.outputs.artifact-url }}
-        deploy_prefix: ${{inputs.deployPrefix}}
-        deploy_token: ${{inputs.deployToken}}
+          script: |
+            const url = core.getInput('commit_url');
+            // remove "https://github.com/" and everything after "#"
+            const basic_path = url.replace("https://github.com/", "").split("#")[0].replace(/\/$/, "");    
+            const path = core.getInput('deploy_prefix') + basic_path; // Add the prefix to the path
+            core.setOutput('path', path);
 
-    - name: Set output from deploy action
+    - name: Checkout gh-pages branch
+      uses: actions/checkout@v4
       if: ${{ inputs.deploy == 'true' }}
-      run: echo "::set-output name=deploy_url::${{ steps.deploy.outputs.deploy_url }}"
+      with:
+        token: ${{ input.deployToken}}
+        ref: gh-pages
+        path: ${{ steps.path_extraction.outputs.path }}
+
+    - name: Prepare deployment
       shell: bash
+      if: ${{ inputs.deploy == 'true' }}
+      run: |
+        CACHE_DIR=${{ steps.path_extraction.outputs.path }}
+        mkdir -p "$CACHE_DIR"
+        cd "$CACHE_DIR"
+        curl -o diff_results.zip ${{inputs.artifact_url}}
+        unzip diff_results.zip
+        rm diff_results.zip
+        rm -rf json
+        mv web/* .
+        rmdir web
+        ls
+
+    - name: Commit and push changes (Deploy)
+      uses: EndBug/add-and-commit@v9
+      with:
+        cwd: .
+        author_name: "GitHub Actions Bot"
+        author_email: "github-actions-bot@example.com"
+        message: "Deploy update to GitHub Pages + ${{ inputs.commit_url }}"
+        push: "origin gh-pages --set-upstream --force"
+
+    - name: Provide Github pages Url
+      id: output
+      run: |
+        gh_pages_url="https://empiricalseconcordia.github.io/RefactoringMiner-Artifacts/${{ steps.path_extraction.outputs.path }}/lists"
+        echo "::set-output name=deploy_url::$gh_pages_url"
+
+    # - name: Set output from deploy action
+    #   if: ${{ inputs.deploy == 'true' }}
+    #   run: echo "::set-output name=deploy_url::${{ steps.deploy.outputs.deploy_url }}"
+    #   shell: bash
 
     

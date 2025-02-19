@@ -16,12 +16,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout gh-pages branch
-      uses: actions/checkout@v4
-      with:
-        token: ${{ input.deploy_token }}
-        ref: gh-pages
-        path: cache
 
     - name: Path extraction
       uses: actions/github-script@v6
@@ -34,6 +28,12 @@ runs:
             const path = core.getInput('deploy_prefix') + basic_path; // Add the prefix to the path
             core.setOutput('path', path);
 
+    - name: Checkout gh-pages branch
+      uses: actions/checkout@v4
+      with:
+        token: ${{ input.deploy_token }}
+        ref: gh-pages
+        path: ${{ steps.path_extraction.outputs.path }}
 
     - name: Prepare deployment
       shell: bash
