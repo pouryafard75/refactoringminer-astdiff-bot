@@ -8,20 +8,27 @@ inputs:
   URL:
     description: 'URL of the repository for the diff operation'
     required: true
-  deploy:
-    description: 'Enable deployment process (true or false)'
-    required: false
-  deployToken:
-    description: 'OAuthToken for writing into gh pages'
-    required: false
-  deployPrefix:
-    description: 'Prefix Path of deployment'
-    required: false
-    default: "cache"
   OAuthToken:
     description: 'OAuthToken for read the commit/pr information (Only required for private urls)'
     required: false
     default: ${{ github.token }}
+
+  screenshot:
+    description: 'Name of the file that you want to take screenshot of'
+    required: false
+    default: ''
+    
+
+  #   deploy:
+  #   description: 'Enable deployment process (true or false)'
+  #   required: false
+  # deployToken:
+  #   description: 'OAuthToken for writing into gh pages'
+  #   required: false
+  # deployPrefix:
+  #   description: 'Prefix Path of deployment'
+  #   required: false
+  #   default: "cache"
   
 outputs:
   artifact_url:
@@ -77,69 +84,42 @@ runs:
     - name: Set artifact URL output
       run: echo "::set-output name=artifact_url::${{ steps.upload_artifact.outputs.artifact-url }}"
       shell: bash
-      
-    - name: Debug
-      run: |
-        echo ${{inputs.deploy}}
-        echo "\n"
-        echo ${{ inputs.deploy == 'true' }}
-        echo "\n"
-        echo "abalfazl"
-      shell: bash  
-
-    - name: Path extraction
-      if: ${{ inputs.deploy == 'true' }}
-      uses: actions/github-script@v6
-      id: path_extraction
-      with:
-          script: |
-            const url = core.getInput('commit_url');
-            // remove "https://github.com/" and everything after "#"
-            const basic_path = url.replace("https://github.com/", "").split("#")[0].replace(/\/$/, "");    
-            const path = core.getInput('deploy_prefix') + basic_path; // Add the prefix to the path
-            core.setOutput('path', path);
-
-    - name: Checkout gh-pages branch
-      uses: actions/checkout@v4
-      if: ${{ inputs.deploy == 'true' }}
-      with:
-        token: ${{ input.deployToken}}
-        ref: gh-pages
-        path: ${{ steps.path_extraction.outputs.path }}
-
-    - name: Prepare deployment
-      shell: bash
-      if: ${{ inputs.deploy == 'true' }}
-      run: |
-        CACHE_DIR=${{ steps.path_extraction.outputs.path }}
-        mkdir -p "$CACHE_DIR"
-        cd "$CACHE_DIR"
-        curl -o diff_results.zip ${{inputs.artifact_url}}
-        unzip diff_results.zip
-        rm diff_results.zip
-        rm -rf json
-        mv web/* .
-        rmdir web
-        ls
-
-    - name: Commit and push changes (Deploy)
-      uses: EndBug/add-and-commit@v9
-      with:
-        cwd: .
-        author_name: "GitHub Actions Bot"
-        author_email: "github-actions-bot@example.com"
-        message: "Deploy update to GitHub Pages + ${{ inputs.commit_url }}"
-        push: "origin gh-pages --set-upstream --force"
-
-    - name: Provide Github pages Url
-      id: output
-      run: |
-        gh_pages_url="https://empiricalseconcordia.github.io/RefactoringMiner-Artifacts/${{ steps.path_extraction.outputs.path }}/lists"
-        echo "::set-output name=deploy_url::$gh_pages_url"
-
-    # - name: Set output from deploy action
-    #   if: ${{ inputs.deploy == 'true' }}
-    #   run: echo "::set-output name=deploy_url::${{ steps.deploy.outputs.deploy_url }}"
-    #   shell: bash
-
     
+
+    # From here we handle the screenshot , unfortunately github action doesnt support early exit,
+    # so its needed to add the condition to all following step
+    # Step 8 & 9: Download and Extract artifact (conditional on screenshot input)
+  
+    - name: Set up Node.js
+      if: ${{ inputs.screenshot != '' }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # You can specify any version of Node.js
+
+    - name: Install and run
+      if: ${{ inputs.screenshot != '' }}
+      run: |    
+        npm install
+        node /src/screenshot.js ${{ github.workspace }}/exportedFromDocker ${{ inputs.screenshot }}
+      shell: bash
+
+    - name: Create zip artifact of the screenshots
+      if: ${{ inputs.screenshot != '' }}
+      run : |
+        zip -r screenshots.zip out
+      shell: bash 
+
+    - name: Upload screenshots as arifact
+      if: ${{ inputs.screenshot != '' }}
+      id: upload_ss_artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: screenshots
+        path: ${{ github.workspace }}screenshots.zip
+    
+    - name: Set artifact URL output
+      if: ${{ inputs.screenshot != '' }}
+      run: |
+        echo ${{ steps.upload_ss_artifacts.outputs.artifact-url }
+        echo "::set-output name=artifact_url::${{ steps.upload_ss_artifacts.outputs.artifact-url }}"
+      shell: bash

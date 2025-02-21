@@ -15,7 +15,7 @@ function getExportedMonacoUrl(id) {
 }
   
 
-const outputDir = '..out';
+const outputDir = 'out';
 const infoPath = "info.json";
 const pageNumbers = getMatchingIds(inputFilePath);
 console.log(inputFilePath);
