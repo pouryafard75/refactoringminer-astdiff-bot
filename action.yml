@@ -120,6 +120,6 @@ runs:
     - name: Set artifact URL output
       if: ${{ inputs.screenshot != '' }}
       run: |
-        echo ${{ steps.upload_ss_artifacts.outputs.artifact-url }
-        echo "::set-output name=artifact_url::${{ steps.upload_ss_artifacts.outputs.artifact-url }}"
+        echo ${{ steps.upload_ss_artifacts.outputs.artifact-url }}
+        echo "::set-output name=sreenshots_url::${{ steps.upload_ss_artifacts.outputs.artifact-url }}"
       shell: bash
