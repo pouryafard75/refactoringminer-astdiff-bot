@@ -48,6 +48,7 @@ function getMatchingIds(inputString, exportDir, infoFilePath) {
             matchingIds.push(item.id);
         }
     });
+    console.log('Matching IDs:', matchingIds);
     return matchingIds;
 }
 
