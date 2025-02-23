@@ -95,6 +95,11 @@ async function takeScreenshots(inputFilePath, exportDir, outputDir = 'out', info
   }
 
   const pageNumbers = getMatchingIds(inputFilePath, exportDir, infoFilePath);
+  core.setOutput('numberOfScreenshots', pageNumbers.length);
+  if (pageNumbers.length === 0) {
+      console.log('No matching IDs found.');
+      return;
+  }
 
   if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
