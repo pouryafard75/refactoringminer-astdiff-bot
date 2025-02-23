@@ -4,6 +4,8 @@ const path = require('path');
 const artifact = require('@actions/artifact');
 const artifactClient = artifact.default;
 const glob = require('glob');
+const { takeScreenshots } = require('./screenshot');
+
 
 
 
@@ -15,6 +17,8 @@ async function run() {
     const url = core.getInput('URL') || process.env.defaultURLValue;
     const oauthToken = core.getInput('OAuthToken') || process.env.GITHUB_TOKEN || process.env.defaultOAuthTokenValue;
     const screenshot = core.getInput('screenshot') || process.env.defaultScreenshotValue;
+
+    console.log('Inputs:', url, oauthToken, screenshot);
 
     verifyInputs(url, oauthToken);
 
@@ -84,7 +88,7 @@ async function run() {
     // Handle screenshot logic if input is provided
     if (screenshot !== undefined && screenshot !== '') {
       console.log('Processing screenshot...');
-      await exec.exec('node', [path.join(workspace, 'src/screenshot.js'), screenshot, diffDir]);
+      await takeScreenshots(screenshot, diffDir);
       console.log('Uploading screenshots as artifact...');
       if (process.env.GITHUB_REPOSITORY !== undefined) {
       const artifactName = 'screenshots';
