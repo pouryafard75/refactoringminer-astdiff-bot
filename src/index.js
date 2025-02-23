@@ -3,6 +3,8 @@ const exec = require('@actions/exec');
 const path = require('path');
 const artifact = require('@actions/artifact');
 const artifactClient = artifact.default;
+const glob = require('glob');
+
 
 
 const fs = require('fs');
@@ -14,9 +16,6 @@ async function run() {
     const oauthToken = core.getInput('OAuthToken') || process.env.GITHUB_TOKEN || process.env.defaultOAuthTokenValue;
     const screenshot = core.getInput('screenshot') || process.env.defaultScreenshotValue;
 
-    console.log(`URL: ${url}`);
-    console.log(`OAuthToken: ${oauthToken}`);
-    console.log(`screenshot: ${screenshot}`);
     verifyInputs(url, oauthToken);
 
     function verifyInputs(url, oauthToken) {
@@ -71,7 +70,7 @@ async function run() {
 
     if (process.env.GITHUB_REPOSITORY !== undefined) {
       const artifactName = 'diff_results';
-      const files = [`${process.env.GITHUB_WORKSPACE}/exportedFromDocker/`];
+      const files = [`${process.env.GITHUB_WORKSPACE}/exportedFromDocker/**/*`];
       const rootDirectory = process.env.GITHUB_WORKSPACE;
       const options = { continueOnError: false};
       const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);

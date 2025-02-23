@@ -18,7 +18,6 @@ function getExportedMonacoUrl(id) {
 const outputDir = 'out';
 const infoPath = "info.json";
 const pageNumbers = getMatchingIds(inputFilePath);
-console.log(inputFilePath);
 
 if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
