@@ -17,109 +17,11 @@ inputs:
     description: 'Name of the file that you want to take screenshot of'
     required: false
     default: ''
-    
-
-  #   deploy:
-  #   description: 'Enable deployment process (true or false)'
-  #   required: false
-  # deployToken:
-  #   description: 'OAuthToken for writing into gh pages'
-  #   required: false
-  # deployPrefix:
-  #   description: 'Prefix Path of deployment'
-  #   required: false
-  #   default: "cache"
   
 outputs:
   artifact_url:
     description: 'URL to download the generated diff artifact'
-    value: ${{ steps.upload_artifact.outputs.artifact-url }}
 
 runs:
-  using: 'composite'
-  
-
-  steps:
-  
-    # Step 1: Checkout the repository (in case we need it for any reason)
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    # Step 2: Pull the latest RefactoringMiner Docker image from Docker Hub
-    - name: Pull RefactoringMiner Docker image
-      run: docker pull tsantalis/refactoringminer:latest
-      shell: bash 
-
-    # Step 4: Run Docker container with RefactoringMiner
-    - name: Run RefactoringMiner to generate diff
-      run: |
-        mkdir -p ${{ github.workspace }}/exportedFromDocker
-        docker run \
-          --env OAuthToken="${{ inputs.OAuthToken }}" \
-          -v ${{ github.workspace }}/exportedFromDocker:/diff/exported \
-          --entrypoint "" \
-          tsantalis/refactoringminer:latest /bin/sh -c "\
-            refactoringminer diff --url \"${{ inputs.URL }}\" -e && \
-            unzip /opt/refactoringminer/lib/RefactoringMiner-DockerBuild.jar -d /tmp/refactoringminer &&
-            mkdir -p /diff/exported/web && \
-            cp -r /tmp/refactoringminer/web /diff/exported/web/resources"
-      shell: bash 
-
-    # Step 5: Create zip artifact of diff results
-    - name: Create zip artifact of diff results
-      run: |
-        cd ${{ github.workspace }}/exportedFromDocker
-        zip -r diff_results.zip .
-      shell: bash 
-
-    # Step 6: Upload the zip artifact as an output
-    - name: Upload diff results as artifact
-      id: upload_artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: diff_results
-        path: ${{ github.workspace }}/exportedFromDocker/diff_results.zip 
-    
-    # Step 7: Set output variable for artifact URL
-    - name: Set artifact URL output
-      run: echo "::set-output name=artifact_url::${{ steps.upload_artifact.outputs.artifact-url }}"
-      shell: bash
-    
-
-    # From here we handle the screenshot , unfortunately github action doesnt support early exit,
-    # so its needed to add the condition to all following step
-    # Step 8 & 9: Download and Extract artifact (conditional on screenshot input)
-  
-    - name: Set up Node.js
-      if: ${{ inputs.screenshot != '' }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'  # You can specify any version of Node.js
-
-    - name: Install and run
-      if: ${{ inputs.screenshot != '' }}
-      run: |    
-        npm install
-        node /src/screenshot.js ${{ github.workspace }}/exportedFromDocker ${{ inputs.screenshot }}
-      shell: bash
-
-    - name: Create zip artifact of the screenshots
-      if: ${{ inputs.screenshot != '' }}
-      run : |
-        zip -r screenshots.zip out
-      shell: bash 
-
-    - name: Upload screenshots as arifact
-      if: ${{ inputs.screenshot != '' }}
-      id: upload_ss_artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: screenshots
-        path: ${{ github.workspace }}screenshots.zip
-    
-    - name: Set artifact URL output
-      if: ${{ inputs.screenshot != '' }}
-      run: |
-        echo ${{ steps.upload_ss_artifacts.outputs.artifact-url }}
-        echo "::set-output name=sreenshots_url::${{ steps.upload_ss_artifacts.outputs.artifact-url }}"
-      shell: bash
+  using: 'node20'
+  main: 'src/index.js'

@@ -11,7 +11,7 @@ if (!inputFilePath || !exportDir) {
 }
 
 function getExportedMonacoUrl(id) {
-    return `file://${exportDir}/exported/web/monaco-page/${id}/index.html`;
+    return `file://${exportDir}/web/monaco-page/${id}/index.html`;
 }
   
 
@@ -43,7 +43,7 @@ if (!fs.existsSync(outputDir)) {
 })();
 
 function getMatchingIds(inputString) {
-    const data = fs.readFileSync(infoPath, 'utf8');
+    const data = fs.readFileSync(path.join(exportDir, "web", infoPath), 'utf8');
     const jsonData = JSON.parse(data);
     const matchingIds = [];
     jsonData.diffInfos.forEach(item => {
