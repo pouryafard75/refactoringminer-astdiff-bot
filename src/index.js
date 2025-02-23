@@ -69,15 +69,9 @@ async function run() {
         cp -r /tmp/refactoringminer/web /diff/exported/web/resources"`
       );
 
-    // Step 4: Create a zip artifact of the diff results
-    console.log('Creating zip artifact of diff results...');
-    await exec.exec('zip', ['-r', 'diff_results.zip', '.'], {
-      cwd: diffDir
-    });
-
     if (process.env.GITHUB_REPOSITORY !== undefined) {
       const artifactName = 'diff_results';
-      const files = [`${process.env.GITHUB_WORKSPACE}/exportedFromDocker/diff_results.zip`];
+      const files = [`${process.env.GITHUB_WORKSPACE}/exportedFromDocker/`];
       const rootDirectory = process.env.GITHUB_WORKSPACE;
       const options = { continueOnError: false};
       const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
@@ -92,13 +86,11 @@ async function run() {
       await exec.exec('npm', ['install'], { cwd: workspace });
       await exec.exec('node', [path.join(workspace, 'src/screenshot.js'), screenshot, diffDir]);
 
-      console.log('Creating zip artifact for screenshots...');
-      await exec.exec('zip', ['-r', 'screenshots.zip', '.'], { cwd: path.join(workspace, 'out') });
 
       console.log('Uploading screenshots as artifact...');
       if (process.env.GITHUB_REPOSITORY !== undefined) {
       const artifactName = 'screenshots';
-      const files = [`${process.env.GITHUB_WORKSPACE}/out/screenshots.zip`];
+      const files = [`${process.env.GITHUB_WORKSPACE}/out/`];
       const rootDirectory = process.env.GITHUB_WORKSPACE;
       const options = { continueOnError: false};
       const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
