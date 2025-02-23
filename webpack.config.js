@@ -3,7 +3,14 @@ const nodeExternals = require('webpack-node-externals');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
     
 module.exports = {
-  externals: [nodeExternals()],
+  externals: [
+    nodeExternals(),
+    {
+      '@actions/core': '@actions/core',
+      '@actions/exec': '@actions/exec',
+      '@actions/artifact': '@actions/artifact',
+    },
+  ],
   entry: './src/index.js',  // Your entry point
   
   output: {
