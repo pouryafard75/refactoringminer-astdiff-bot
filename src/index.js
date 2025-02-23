@@ -7,7 +7,7 @@ const artifactClient = artifact.default;
 const glob = require('glob');
 
 const fs = require('fs');
-
+run();
 async function run() {
   try {
     // Get inputs
@@ -71,41 +71,21 @@ async function run() {
       );
 
     if (process.env.GITHUB_REPOSITORY !== undefined) {
-      const artifactName = 'diff_results';
-      const rootDirectory = `${process.env.GITHUB_WORKSPACE}/exportedFromDocker/`
-      const files = glob.sync(`${rootDirectory}/**/*`);
-      const options = { continueOnError: false};
-      const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
-      core.setOutput('artifact_url', getArtifactUrl(uploadResponse.id));
+      core.setOutput('artifact_path', `${process.env.GITHUB_WORKSPACE}/exportedFromDocker/`);
     }
 
-    // Handle screenshot logic if input is provided
     if (screenshot !== undefined && screenshot !== '') {
       console.log('Installing Puppeteer...');
       await exec.exec('npx puppeteer browsers install chrome');
       console.log('Processing screenshot...');
       await takeScreenshots(screenshot, diffDir);
-      console.log('Uploading screenshots as artifact...');
       if (process.env.GITHUB_REPOSITORY !== undefined) {
-      const artifactName = 'screenshots';
-      const rootDirectory = `${process.env.GITHUB_WORKSPACE}/out/`
-      const files = glob.sync(`${rootDirectory}/**/*`);
-      const options = { continueOnError: false};
-      const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
-      core.setOutput('screenshots_url', getArtifactUrl(uploadResponse.id));
+      core.setOutput('screenshots_path', `${process.env.GITHUB_WORKSPACE}/out/`);
       }
     }
   } catch (error) {
     core.setFailed(`Action failed with error: ${error.message}`);
   }
-}
-
-run();
-function getArtifactUrl(artifactId) {
-  const repo = process.env.GITHUB_REPOSITORY;
-  const runId = process.env.GITHUB_RUN_ID;
-  const artifactUrl = `https://github.com/${repo}/actions/runs/${runId}/artifacts/${artifactId}`;
-  return artifactUrl;
 }
 
 async function takeScreenshots(inputFilePath, exportDir, outputDir = 'out', infoFilePath = 'info.json') {
