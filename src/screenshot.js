@@ -24,6 +24,7 @@ if (!fs.existsSync(outputDir)) {
 }
 
 (async () => {
+    console.log('Launching browser...');
     const browser = await puppeteer.launch({
         args: ['--no-sandbox']
     });
@@ -44,6 +45,7 @@ if (!fs.existsSync(outputDir)) {
 })();
 
 function getMatchingIds(inputString) {
+    console.log('Reading info.json...');
     const data = fs.readFileSync(path.join(exportDir, "web", infoPath), 'utf8');
     const jsonData = JSON.parse(data);
     const matchingIds = [];

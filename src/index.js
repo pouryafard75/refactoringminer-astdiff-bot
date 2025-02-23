@@ -84,10 +84,7 @@ async function run() {
     // Handle screenshot logic if input is provided
     if (screenshot !== undefined && screenshot !== '') {
       console.log('Processing screenshot...');
-      await exec.exec('npm', ['install'], { cwd: workspace });
       await exec.exec('node', [path.join(workspace, 'src/screenshot.js'), screenshot, diffDir]);
-
-
       console.log('Uploading screenshots as artifact...');
       if (process.env.GITHUB_REPOSITORY !== undefined) {
       const artifactName = 'screenshots';
