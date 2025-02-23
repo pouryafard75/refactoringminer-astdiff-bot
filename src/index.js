@@ -82,7 +82,7 @@ async function run() {
     }
 
     // Handle screenshot logic if input is provided
-    if (screenshot) {
+    if (screenshot !== undefined && screenshot !== '') {
       console.log('Processing screenshot...');
       await exec.exec('npm', ['install'], { cwd: workspace });
       await exec.exec('node', [path.join(workspace, 'src/screenshot.js'), screenshot, diffDir]);
