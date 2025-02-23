@@ -70,8 +70,10 @@ async function run() {
 
     if (process.env.GITHUB_REPOSITORY !== undefined) {
       const artifactName = 'diff_results';
-      const files = [`${process.env.GITHUB_WORKSPACE}/exportedFromDocker/**/*`];
-      const rootDirectory = process.env.GITHUB_WORKSPACE;
+      
+      const rootDirectory = `${process.env.GITHUB_WORKSPACE}/exportedFromDocker/`
+      const files = glob.sync(`${rootDirectory}/**/*`);
+    
       const options = { continueOnError: false};
       const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
       const artifactId = uploadResponse.artifactId;
@@ -89,8 +91,8 @@ async function run() {
       console.log('Uploading screenshots as artifact...');
       if (process.env.GITHUB_REPOSITORY !== undefined) {
       const artifactName = 'screenshots';
-      const files = [`${process.env.GITHUB_WORKSPACE}/out/`];
-      const rootDirectory = process.env.GITHUB_WORKSPACE;
+      const rootDirectory = `${process.env.GITHUB_WORKSPACE}/out/`
+      const files = glob.sync(`${rootDirectory}/**/*`);
       const options = { continueOnError: false};
       const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
       const artifactId = uploadResponse.artifactId;
