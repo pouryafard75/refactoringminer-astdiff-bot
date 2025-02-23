@@ -42,7 +42,7 @@ async function run() {
       
       console.log("Building RefactoringMiner Docker image...");
       await exec.exec(
-        "cd RM-ASTDiff && docker build -f docker/Dockerfile -t tsantalis/refactoringminer:latest ."
+        "docker build -f RM-ASTDiff/docker/Dockerfile -t tsantalis/refactoringminer:latest RM-ASTDiff"
       );
     
       console.log("Done.");
