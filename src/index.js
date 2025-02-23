@@ -87,6 +87,8 @@ async function run() {
 
     // Handle screenshot logic if input is provided
     if (screenshot !== undefined && screenshot !== '') {
+      console.log('Installing Puppeteer...');
+      await exec.exec('npm', ['install'], { cwd: workspace });
       console.log('Processing screenshot...');
       await takeScreenshots(screenshot, diffDir);
       console.log('Uploading screenshots as artifact...');
