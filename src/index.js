@@ -34,24 +34,24 @@ async function run() {
     // console.log('Pulling RefactoringMiner Docker image...');
     // await exec.exec('docker', ['pull', 'tsantalis/refactoringminer:latest']);
   
-    // try {
-    //   console.log("Cloning RefactoringMiner repository...");
-    //   await exec.exec("git clone --single-branch --branch=exportInfo https://github.com/pouryafard75/RM-ASTDiff.git RM-ASTDiff")
-    //   .catch((error) => {
-    //     console.error("Git clone failed:", error);
-    //   });
+    try {
+      console.log("Cloning RefactoringMiner repository...");
+      await exec.exec("git clone --single-branch --branch=exportInfo https://github.com/pouryafard75/RM-ASTDiff.git RM-ASTDiff")
+      .catch((error) => {
+        console.error("Git clone failed:", error);
+      });
       
-    //   console.log("Building RefactoringMiner Docker image...");
-    //   await exec.exec(
-    //     "docker build -f RM-ASTDiff/docker/Dockerfile -t tsantalis/refactoringminer:latest RM-ASTDiff"
-    //   );
+      console.log("Building RefactoringMiner Docker image...");
+      await exec.exec(
+        "docker build -f RM-ASTDiff/docker/Dockerfile -t tsantalis/refactoringminer:latest RM-ASTDiff"
+      );
     
-    //   console.log("Done.");
-    // }
-    // catch (error) {
-    //   console.error(error);
-    //   process.exit(1);
-    // }
+      console.log("Done.");
+    }
+    catch (error) {
+      console.error(error);
+      process.exit(1);
+    }
     
     console.log('Running RefactoringMiner...');
     const workspace = process.env.GITHUB_WORKSPACE;
