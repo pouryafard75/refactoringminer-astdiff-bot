@@ -4,7 +4,7 @@ on:
   workflow_dispatch:  # Trigger manually via GitHub UI
 
 jobs:
-  test-action:
+  Run_Custom_Action:
     runs-on: ubuntu-latest
 
     steps:
