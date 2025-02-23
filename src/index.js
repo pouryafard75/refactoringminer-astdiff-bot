@@ -76,9 +76,7 @@ async function run() {
       const files = glob.sync(`${rootDirectory}/**/*`);
       const options = { continueOnError: false};
       const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
-      const artifactId = uploadResponse.artifactId;
-      const url = getArtifactUrl(artifactId);
-      core.setOutput('artifact_url', url);
+      core.setOutput('artifact_url', getArtifactUrl(uploadResponse.id));
     }
 
     // Handle screenshot logic if input is provided
@@ -94,9 +92,7 @@ async function run() {
       const files = glob.sync(`${rootDirectory}/**/*`);
       const options = { continueOnError: false};
       const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
-      const artifactId = uploadResponse.artifactId;
-      const url = getArtifactUrl(artifactId);
-      core.setOutput('screenshots_url', url);
+      core.setOutput('screenshots_url', getArtifactUrl(uploadResponse.id));
       }
     }
   } catch (error) {
