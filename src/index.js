@@ -35,11 +35,11 @@ async function run() {
   
     try {
       console.log("Cloning RefactoringMiner repository...");
-      await exec.exec(
-        "git clone --single-branch --branch=exportInfo https://github.com/pouryafard75/RM-ASTDiff.git",
-        { stdio: "inherit", shell: true }
-      );
-    
+      await exec.exec("git clone --single-branch --branch=exportInfo https://github.com/pouryafard75/RM-ASTDiff.git RM-ASTDiff")
+      .catch((error) => {
+        console.error("Git clone failed:", error);
+      });
+      
       console.log("Building RefactoringMiner Docker image...");
       await exec.exec(
         "cd RM-ASTDiff && docker build -f docker/Dockerfile -t tsantalis/refactoringminer:latest .",
@@ -99,7 +99,7 @@ async function run() {
       console.log('Uploading screenshots as artifact...');
       if (process.env.GITHUB_REPOSITORY !== undefined) {
       const artifactName = 'screenshots';
-      const files = [`${process.env.GITHUB_WORKSPACE}/screenshots.zip`];
+      const files = [`${process.env.GITHUB_WORKSPACE}/out/screenshots.zip`];
       const rootDirectory = process.env.GITHUB_WORKSPACE;
       const options = { continueOnError: false};
       const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
