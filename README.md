@@ -6,8 +6,8 @@
 ## Features
 
 - Executes RefactoringMiner to generate an AST Diff for any commit or pull request.
-- Uploads the diff results as a `.zip` artifact.
-- Uploads the screenshots of the diff
+- Generates the webdiff artifact.
+- Generates AST Diff screenshots.
 - Easy to integrate into your GitHub workflows.
 
 ## Usage
