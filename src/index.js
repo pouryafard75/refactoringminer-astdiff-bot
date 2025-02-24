@@ -1,10 +1,8 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const path = require('path');
-const artifact = require('@actions/artifact');
 const puppeteer = require('puppeteer');
-const artifactClient = artifact.default;
-const glob = require('glob');
+
 
 const fs = require('fs');
 run();
@@ -30,7 +28,7 @@ async function run() {
     }
 
 
-    Step 1: Pull RefactoringMiner Docker image
+    // Step 1: Pull RefactoringMiner Docker image
     console.log('Pulling RefactoringMiner Docker image...');
     await exec.exec('docker', ['pull', 'tsantalis/refactoringminer:latest']);
     
