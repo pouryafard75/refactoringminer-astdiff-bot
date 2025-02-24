@@ -1,13 +1,15 @@
-name: Build with NCC
+name: Build Dist Folder with NCC
 
 on:
   push:
     branches:
       - main  # Change this if you want to run on a different branch
   pull_request:
+    
 
 jobs:
   build:
+    if: github.actor != 'github-actions'
     runs-on: ubuntu-latest
 
     steps:
