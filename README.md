@@ -24,9 +24,12 @@
 
 | Name         | Description                                     |
 |--------------|-------------------------------------------------|
-| `artifact_url` | URL to download the generated diff artifact   |
+| `artifact_path` | Path to the generated diff artifact (Exported webdiff   |
+| `screenshots_path` | Path to the taken screenshots   |
 
-Please visit https://api.imgbb.com/ to get Your API key and pass it to the action and set it up as secrets.IMGBB_API_KEY.
+
+Please visit https://api.imgbb.com/ to get Your API key and pass it to the action and set it up as `secrets.IMGBB_API_KEY.`
+
 Note: You can generate an OAuth token in GitHub Settings -> Developer settings -> Personal access tokens.
 
 ### Example Workflow
@@ -48,7 +51,8 @@ jobs:
         uses: pouryafard75/refactoringminer-astdiff-exporter@v0.4
         with:
           OAuthToken: ${{ secrets.GITHUB_TOKEN }}
-          URL: https://github.com/your-username/your-repository/commit/SHA
+          URL: https://github.com/Alluxio/alluxio/commit/9aeefcd8120bb3b89cdb437d8c32d2ed84b8a825
+          Screenshot: MaxFreeAllocator
 
 ```
 
