@@ -28,7 +28,7 @@
 | `screenshots_path` | Path to the taken screenshots   |
 
 
-Please visit https://api.imgbb.com/ to get Your API key and pass it to the action and set it up as `secrets.IMGBB_API_KEY.`
+Please visit https://api.imgbb.com/ to get your API key. You are supposed to have this secret in your repo/org as `secrets.IMGBB_API_KEY.`
 
 Note: You can generate an OAuth token in GitHub Settings -> Developer settings -> Personal access tokens.
 
