@@ -36,6 +36,8 @@ jobs:
         run: |
             git config --global user.name 'github-actions'
             git config --global user.email 'github-actions@github.com'
-            git add dist
-            git commit -m 'chore: update dist folder'
-            git push
+            git diff --exit-code dist || (
+                git add dist
+                git commit -m 'chore: update dist folder'
+                git push
+            )
