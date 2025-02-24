@@ -25,7 +25,8 @@
 | Name         | Description                                     |
 |--------------|-------------------------------------------------|
 | `artifact_url` | URL to download the generated diff artifact   |
- 
+
+Please visit https://api.imgbb.com/ to get Your API key and pass it to the action and set it up as secrets.IMGBB_API_KEY.
 Note: You can generate an OAuth token in GitHub Settings -> Developer settings -> Personal access tokens.
 
 ### Example Workflow
@@ -55,11 +56,6 @@ jobs:
 - Creating a diff-bot that monitors issues (or even PRs) and generates the AST Diff as an artifact/screenshot
 
 Below is an example of a bot that listens for the `@diff` keyword in issue comments and generates the screenshot for the file. 
-
-For instance, you can trigger it in your issue's discussion with the following comment: 
-@diff Alluxio/alluxio@9aeefcd MaxFree
-
-
 
 ```yaml
 name: AST diff Bot
@@ -186,9 +182,11 @@ jobs:
               body: commentBody
             });
             console.log('Comment posted to the issue!');
-            
 ```
 
-And then you can trigger the bot with @diff comamnd in the issues:
-![Bot responding with artifact link](./imgs/diffbot.png)
+For instance, you can trigger it in your issue's discussion with the following comment: 
+@diff Alluxio/alluxio@9aeefcd MaxFree
+<img width="943" alt="Screenshot 2025-02-24 at 11 59 04 AM" src="https://github.com/user-attachments/assets/8db83014-bf68-47f6-90c5-7d7e63ff64b3" />
+
+
 
