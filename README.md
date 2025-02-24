@@ -24,7 +24,7 @@
 
 | Name         | Description                                     |
 |--------------|-------------------------------------------------|
-| `artifact_path` | Path to the generated diff artifact (Exported webdiff   |
+| `artifact_path` | Path to the generated diff artifact (Exported webdiff) |
 | `screenshots_path` | Path to the taken screenshots   |
 
 
