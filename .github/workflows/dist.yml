@@ -1,0 +1,37 @@
+name: Build with NCC
+
+on:
+  push:
+    branches:
+      - main  # Change this if you want to run on a different branch
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # Change to your required Node.js version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install NCC
+        run: npm install -g @vercel/ncc
+
+      - name: Build with NCC
+        run: ncc build src/index.js --license licenses.txt
+
+      - name: Commit and push dist folder
+        run: |
+            git config --global user.name 'github-actions'
+            git config --global user.email 'github-actions@github.com'
+            git add dist
+            git commit -m 'chore: update dist folder'
+            git push
