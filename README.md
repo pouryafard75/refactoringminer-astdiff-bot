@@ -7,6 +7,7 @@
 
 - Executes RefactoringMiner to generate an AST Diff for any commit or pull request.
 - Uploads the diff results as a `.zip` artifact.
+- Uploads the screenshots of the diff
 - Easy to integrate into your GitHub workflows.
 
 ## Usage
@@ -15,8 +16,9 @@
 
 | Name       | Description                           | Required |
 |------------|---------------------------------------|----------|
-| `OAuthToken` | Github OAuthToken for authentication        | Yes      |
+| `OAuthToken` | Github OAuthToken for authentication        | Yes (Only for private repos)|
 | `URL`       | URL of the commit for the diff | Yes      |
+| `Screenshot`       | Name of the file to take the screenshot of  | No      |
 
 ### Outputs
 
