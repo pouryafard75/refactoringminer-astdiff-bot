@@ -55,6 +55,7 @@ async function run() {
 
     if (screenshot !== undefined && screenshot !== '') {
       console.log('Installing Puppeteer...');
+      await exec.exec('npm install puppeteer@24.3.0');
       await exec.exec('npx puppeteer browsers install chrome@133.0.6943.98');
       console.log('Processing screenshot...');
       await takeScreenshots(screenshot, diffDir);
