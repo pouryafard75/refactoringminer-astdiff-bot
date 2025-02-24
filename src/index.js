@@ -120,7 +120,7 @@ async function takeScreenshots(inputFilePath, exportDir, outputDir = 'out', info
       index++;
       const url = getExportedMonacoUrl(num);
       console.log(`Navigating to: ${url}`);
-      await page.goto(url, { waitUntil: 'networkidle2' });
+      await page.goto(url, { waitUntil: ['networkidle2', 'domcontentloaded', 'networkidle0']});
       const screenshotPath = path.join(outputDir, `${index}.png`);
       await page.screenshot({ path: screenshotPath, fullPage: true });
       console.log(`Saved screenshot: ${screenshotPath}`);
