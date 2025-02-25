@@ -48599,9 +48599,16 @@ async function takeScreenshots(inputFilePath, exportDir, outputDir = 'out', info
     let browser;
     try {
         browser = await puppeteer.launch({
-          timeout: 3000,
-          args: ['--no-sandbox']
-        });
+            timeout: 3000,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-font-subpixel-positioning',
+                '--force-color-profile=srgb'
+            ]
+        });        
         console.log('Browser launched.');
     } catch (error) {
         console.error('Error launching browser:', error);
