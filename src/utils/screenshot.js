@@ -23,7 +23,7 @@ async function takeScreenshots(inputFilePath, exportDir, outputDir = 'out', info
     let browser;
     try {
         browser = await puppeteer.launch({
-            timeout: 3000,
+            timeout: 10000,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
