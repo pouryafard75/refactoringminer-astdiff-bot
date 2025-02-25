@@ -56,8 +56,7 @@ async function run() {
     if (screenshot !== undefined && screenshot !== '') {
       // RUN npx puppeteer browsers install chrome --install-deps
       console.log('Installing puppeteer browsers...');
-      await exec.exec('npx', ['puppeteer', 'browsers', 'install', 'chrome', '--install-deps']);
-
+      await exec.exec('npx', ['puppeteer', 'browsers', 'install', 'chrome@stable']);
 
       console.log('Taking screenshots...');
       const numberOfScreenshots = await takeScreenshots(screenshot, diffDir);
