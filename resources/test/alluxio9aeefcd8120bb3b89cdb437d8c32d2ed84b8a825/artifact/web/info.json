@@ -1,0 +1,7 @@
+{
+  "diffInfos" : [ {
+    "srcPath" : "servers/src/main/java/tachyon/worker/block/allocator/MaxFreeAllocator.java",
+    "dstPath" : "servers/src/main/java/tachyon/worker/block/allocator/MaxFreeAllocator.java",
+    "id" : 0
+  } ]
+}

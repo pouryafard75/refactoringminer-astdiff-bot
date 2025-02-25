@@ -1,0 +1,263 @@
+===
+insert-node
+---
+MethodDeclaration [2612,3233]
+to
+TypeDeclaration [1147,2728]
+at 8===
+insert-tree
+---
+Javadoc [2612,2857]
+    TagElement [2621,2703]
+        TextElement: Find a directory in a tier that has max free space and is able to store the block. [2621,2703]
+    TagElement [2714,2742]
+        TAG_NAME: @param [2714,2720]
+        SimpleName: tier [2721,2725]
+        TextElement:  the storage tier [2725,2742]
+    TagElement [2748,2791]
+        TAG_NAME: @param [2748,2754]
+        SimpleName: blockSize [2755,2764]
+        TextElement:  the size of block in bytes [2764,2791]
+    TagElement [2797,2851]
+        TAG_NAME: @return [2797,2804]
+        TextElement:  the storage directory if found, null otherwise [2804,2851]
+to
+MethodDeclaration [2612,3233]
+at 0===
+insert-node
+---
+Modifier: private [2860,2867]
+to
+MethodDeclaration [2612,3233]
+at 1===
+insert-tree
+---
+SimpleType [2868,2878]
+    SimpleName: StorageDir [2868,2878]
+to
+MethodDeclaration [2612,3233]
+at 2===
+insert-node
+---
+SimpleName: getCandidateDirInTier [2879,2900]
+to
+MethodDeclaration [2612,3233]
+at 3===
+insert-tree
+---
+SingleVariableDeclaration [2901,2917]
+    SimpleType [2901,2912]
+        SimpleName: StorageTier [2901,2912]
+    SimpleName: tier [2913,2917]
+to
+MethodDeclaration [2612,3233]
+at 4===
+insert-tree
+---
+SingleVariableDeclaration [2919,2933]
+    PrimitiveType: long [2919,2923]
+    SimpleName: blockSize [2924,2933]
+to
+MethodDeclaration [2612,3233]
+at 5===
+insert-node
+---
+Block [2935,3233]
+to
+MethodDeclaration [2612,3233]
+at 6===
+update-node
+---
+TextElement: An allocator that allocates a block in the storage dir with most free space. [1154,1230]
+replace An allocator that allocates a block in the storage dir with most free space. by An allocator that allocates a block in the storage dir with most free space. It always allocates===
+insert-node
+---
+TextElement: to the highest tier if the requested block store location is any tier. [1254,1324]
+to
+TagElement [1154,1230]
+at 1===
+insert-tree
+---
+VariableDeclarationStatement [2941,2972]
+    SimpleType [2941,2951]
+        SimpleName: StorageDir [2941,2951]
+    VariableDeclarationFragment [2952,2971]
+        SimpleName: candidateDir [2952,2964]
+        NullLiteral [2967,2971]
+to
+Block [2935,3233]
+at 0===
+move-tree
+---
+VariableDeclarationStatement [1650,1680]
+    PrimitiveType: long [1650,1654]
+    VariableDeclarationFragment [1655,1679]
+        SimpleName: maxFreeBytes [1655,1667]
+        SimpleName: blockSize [1670,1679]
+to
+Block [2935,3233]
+at 1===
+insert-tree
+---
+ReturnStatement [3209,3229]
+    SimpleName: candidateDir [3216,3228]
+to
+Block [2935,3233]
+at 2===
+insert-node
+---
+InfixExpression [2997,3010]
+to
+VariableDeclarationFragment [1655,1679]
+at 1===
+insert-tree
+---
+ExpressionStatement [2213,2267]
+    Assignment [2213,2266]
+        SimpleName: candidateDir [2213,2225]
+        ASSIGNMENT_OPERATOR: = [2226,2227]
+        MethodInvocation [2228,2266]
+            SimpleName: getCandidateDirInTier [2228,2249]
+            METHOD_INVOCATION_ARGUMENTS [2250,2265]
+                SimpleName: tier [2250,2254]
+                SimpleName: blockSize [2256,2265]
+to
+Block [2109,2391]
+at 1===
+move-tree
+---
+SimpleName: blockSize [1670,1679]
+to
+InfixExpression [2997,3010]
+at 0===
+insert-node
+---
+INFIX_EXPRESSION_OPERATOR: - [3007,3008]
+to
+InfixExpression [2997,3010]
+at 1===
+insert-node
+---
+NumberLiteral: 1 [3009,3010]
+to
+InfixExpression [2997,3010]
+at 2===
+insert-tree
+---
+ExpressionStatement [1862,1916]
+    Assignment [1862,1915]
+        SimpleName: candidateDir [1862,1874]
+        ASSIGNMENT_OPERATOR: = [1875,1876]
+        MethodInvocation [1877,1915]
+            SimpleName: getCandidateDirInTier [1877,1898]
+            METHOD_INVOCATION_ARGUMENTS [1899,1914]
+                SimpleName: tier [1899,1903]
+                SimpleName: blockSize [1905,1914]
+to
+Block [1794,2021]
+at 0===
+insert-tree
+---
+IfStatement [1925,2040]
+    InfixExpression [1929,1949]
+        SimpleName: candidateDir [1929,1941]
+        INFIX_EXPRESSION_OPERATOR: != [1942,1944]
+        NullLiteral [1945,1949]
+    Block [1951,2040]
+        ReturnStatement [1963,2030]
+            ClassInstanceCreation [1970,2029]
+                SimpleType [1974,1987]
+                    SimpleName: TempBlockMeta [1974,1987]
+                SimpleName: userId [1988,1994]
+                SimpleName: blockId [1996,2003]
+                SimpleName: blockSize [2005,2014]
+                SimpleName: candidateDir [2016,2028]
+to
+Block [1794,2021]
+at 1===
+multi-move-tree
+---
+INFIX_EXPRESSION_OPERATOR: >= [1889,1891]
+to
+INFIX_EXPRESSION_OPERATOR: > [3097,3098]
+at -1===
+multi-move-tree
+---
+INFIX_EXPRESSION_OPERATOR: >= [2269,2271]
+to
+INFIX_EXPRESSION_OPERATOR: > [3097,3098]
+at -1===
+multi-move-tree
+---
+EnhancedForStatement [1804,2013]
+    SingleVariableDeclaration [1809,1823]
+        SimpleType [1809,1819]
+            SimpleName: StorageDir [1809,1819]
+        SimpleName: dir [1820,1823]
+    MethodInvocation [1826,1847]
+        METHOD_INVOCATION_RECEIVER [1826,1830]
+            SimpleName: tier [1826,1830]
+        SimpleName: getStorageDirs [1831,1845]
+    Block [1849,2013]
+        IfStatement [1861,2003]
+            InfixExpression [1865,1904]
+                MethodInvocation [1865,1888]
+                    METHOD_INVOCATION_RECEIVER [1865,1868]
+                        SimpleName: dir [1865,1868]
+                    SimpleName: getAvailableBytes [1869,1886]
+                INFIX_EXPRESSION_OPERATOR: >= [1889,1891]
+                SimpleName: maxFreeBytes [1892,1904]
+            Block [1906,2003]
+                ExpressionStatement [1920,1959]
+                    Assignment [1920,1958]
+                        SimpleName: maxFreeBytes [1920,1932]
+                        ASSIGNMENT_OPERATOR: = [1933,1934]
+                        MethodInvocation [1935,1958]
+                            METHOD_INVOCATION_RECEIVER [1935,1938]
+                                SimpleName: dir [1935,1938]
+                            SimpleName: getAvailableBytes [1939,1956]
+                ExpressionStatement [1972,1991]
+                    Assignment [1972,1990]
+                        SimpleName: candidateDir [1972,1984]
+                        ASSIGNMENT_OPERATOR: = [1985,1986]
+                        SimpleName: dir [1987,1990]
+to
+EnhancedForStatement [3016,3204]
+at -1===
+multi-move-tree
+---
+EnhancedForStatement [2186,2385]
+    SingleVariableDeclaration [2191,2205]
+        SimpleType [2191,2201]
+            SimpleName: StorageDir [2191,2201]
+        SimpleName: dir [2202,2205]
+    MethodInvocation [2208,2229]
+        METHOD_INVOCATION_RECEIVER [2208,2212]
+            SimpleName: tier [2208,2212]
+        SimpleName: getStorageDirs [2213,2227]
+    Block [2231,2385]
+        IfStatement [2241,2377]
+            InfixExpression [2245,2284]
+                MethodInvocation [2245,2268]
+                    METHOD_INVOCATION_RECEIVER [2245,2248]
+                        SimpleName: dir [2245,2248]
+                    SimpleName: getAvailableBytes [2249,2266]
+                INFIX_EXPRESSION_OPERATOR: >= [2269,2271]
+                SimpleName: maxFreeBytes [2272,2284]
+            Block [2286,2377]
+                ExpressionStatement [2298,2337]
+                    Assignment [2298,2336]
+                        SimpleName: maxFreeBytes [2298,2310]
+                        ASSIGNMENT_OPERATOR: = [2311,2312]
+                        MethodInvocation [2313,2336]
+                            METHOD_INVOCATION_RECEIVER [2313,2316]
+                                SimpleName: dir [2313,2316]
+                            SimpleName: getAvailableBytes [2317,2334]
+                ExpressionStatement [2348,2367]
+                    Assignment [2348,2366]
+                        SimpleName: candidateDir [2348,2360]
+                        ASSIGNMENT_OPERATOR: = [2361,2362]
+                        SimpleName: dir [2363,2366]
+to
+EnhancedForStatement [3016,3204]
+at -1
