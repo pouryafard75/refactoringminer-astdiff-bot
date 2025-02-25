@@ -65,9 +65,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
       - name: Use custom action from the root
-        uses: ./
+        id: customAction
+        uses: ../.
         with:
           URL: "https://github.com/Alluxio/alluxio/commit/9aeefcd8120bb3b89cdb437d8c32d2ed84b8a825"
           screenshot: "java"
+          
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v2
+        with:
+          name: screenshot
+          path: ${{ steps.customAction.outputs.screenshots_path}}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifact
+          path: ${{ steps.customAction.outputs.artifact_path}}
