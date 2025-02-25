@@ -59,13 +59,14 @@ jobs:
                 git commit -m 'chore: update dist folder'
                 git push
             )
-                
+
   runAction:
     needs: build_dist
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        
       - name: Use custom action from the root
         id: customAction
         uses: ./
