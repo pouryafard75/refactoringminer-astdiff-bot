@@ -27,7 +27,6 @@ jobs:
 
       - name: Run tests
         run: npm test
-
   build_dist:
     needs: test
     runs-on: ubuntu-latest
