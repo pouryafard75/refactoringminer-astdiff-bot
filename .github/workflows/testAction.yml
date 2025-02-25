@@ -12,8 +12,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Use custom action from the root
-        id: customAction
         uses: ./
+        id : customAction
         with:
           URL: "https://github.com/Alluxio/alluxio/commit/9aeefcd8120bb3b89cdb437d8c32d2ed84b8a825"
           screenshot: "java"
