@@ -51,6 +51,8 @@ describe("Screenshot Test", () => {
     if (!fs.existsSync(file2)) return false;
     const hash1 = crypto.createHash("sha256").update(fs.readFileSync(file1)).digest("hex");
     const hash2 = crypto.createHash("sha256").update(fs.readFileSync(file2)).digest("hex");
+    console.log(`hash1: ${hash1}`);
+    console.log(`hash2: ${hash2}`);
 
     return hash1 === hash2;
   };
