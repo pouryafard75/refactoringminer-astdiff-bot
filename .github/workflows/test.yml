@@ -1,12 +1,68 @@
-name: Test Custom Action
+name: Run tests
 
 on:
-  workflow_dispatch:  # Trigger manually via GitHub UI
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  Run_Custom_Action:
+  test:
     runs-on: ubuntu-latest
+    if: github.actor != 'github-actions'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  build_dis:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+            token: ${{ secrets.OAUTHTOKENWRITE }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+            node-version: '20'  # Change to your required Node.js version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install NCC
+        run: npm install -g @vercel/ncc
+
+      - name: Build with NCC
+        run: ncc build src/index.js --license licenses.txt
+
+      - name: Commit and push dist folder
+        run: |
+            git config --global user.name 'github-actions'
+            git config --global user.email 'github-actions@github.com'
+            git diff --exit-code dist || (
+                git add dist
+                git commit -m 'chore: update dist folder'
+                git push
+            )
+  runAction:
+    needs: build_dist
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
