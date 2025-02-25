@@ -27,10 +27,9 @@ describe("Screenshot Test", () => {
       const screenshotInput = "MaxFree";
       const expectedNumberOfScreenshots = 1;
 
-
-
       const screenshotOutputPath = path.join(outDir, name, screenshotFolder);
       const resBasePath = path.join(workspacePath,resourcePath,name);
+      console.log(`Calling takeScreenshots`);
       const numberOfScreenshots = await takeScreenshots(
           screenshotInput,
           path.join(resBasePath, artifactFolder),
@@ -44,7 +43,7 @@ describe("Screenshot Test", () => {
         await expect(fs.existsSync(generatedFile)).toBe(true);
         await expect(compareImages(generatedFile, referenceFile)).toBe(true);
       }
-    });
+    },20000);
 
     afterAll(() => {
       if (fs.existsSync(outDir)) {

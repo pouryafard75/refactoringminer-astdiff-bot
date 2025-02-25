@@ -109,7 +109,7 @@ module.exports = eos;
 const debug = __webpack_require__(74611)('extract-zip')
 // eslint-disable-next-line node/no-unsupported-features/node-builtins
 const { createWriteStream, promises: fs } = __webpack_require__(79896)
-const getStream = __webpack_require__(2700)
+const getStream = __webpack_require__(62257)
 const path = __webpack_require__(16928)
 const { promisify } = __webpack_require__(39023)
 const stream = __webpack_require__(2203)
@@ -279,6 +279,134 @@ module.exports = async function (zipPath, opts) {
   opts.dir = await fs.realpath(opts.dir)
   return new Extractor(zipPath, opts).extract()
 }
+
+
+/***/ }),
+
+/***/ 37480:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+const {PassThrough: PassThroughStream} = __webpack_require__(2203);
+
+module.exports = options => {
+	options = {...options};
+
+	const {array} = options;
+	let {encoding} = options;
+	const isBuffer = encoding === 'buffer';
+	let objectMode = false;
+
+	if (array) {
+		objectMode = !(encoding || isBuffer);
+	} else {
+		encoding = encoding || 'utf8';
+	}
+
+	if (isBuffer) {
+		encoding = null;
+	}
+
+	const stream = new PassThroughStream({objectMode});
+
+	if (encoding) {
+		stream.setEncoding(encoding);
+	}
+
+	let length = 0;
+	const chunks = [];
+
+	stream.on('data', chunk => {
+		chunks.push(chunk);
+
+		if (objectMode) {
+			length = chunks.length;
+		} else {
+			length += chunk.length;
+		}
+	});
+
+	stream.getBufferedValue = () => {
+		if (array) {
+			return chunks;
+		}
+
+		return isBuffer ? Buffer.concat(chunks, length) : chunks.join('');
+	};
+
+	stream.getBufferedLength = () => length;
+
+	return stream;
+};
+
+
+/***/ }),
+
+/***/ 62257:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+const {constants: BufferConstants} = __webpack_require__(20181);
+const pump = __webpack_require__(32349);
+const bufferStream = __webpack_require__(37480);
+
+class MaxBufferError extends Error {
+	constructor() {
+		super('maxBuffer exceeded');
+		this.name = 'MaxBufferError';
+	}
+}
+
+async function getStream(inputStream, options) {
+	if (!inputStream) {
+		return Promise.reject(new Error('Expected a stream'));
+	}
+
+	options = {
+		maxBuffer: Infinity,
+		...options
+	};
+
+	const {maxBuffer} = options;
+
+	let stream;
+	await new Promise((resolve, reject) => {
+		const rejectPromise = error => {
+			// Don't retrieve an oversized buffer.
+			if (error && stream.getBufferedLength() <= BufferConstants.MAX_LENGTH) {
+				error.bufferedData = stream.getBufferedValue();
+			}
+
+			reject(error);
+		};
+
+		stream = pump(inputStream, bufferStream(options), error => {
+			if (error) {
+				rejectPromise(error);
+				return;
+			}
+
+			resolve();
+		});
+
+		stream.on('data', () => {
+			if (stream.getBufferedLength() > maxBuffer) {
+				rejectPromise(new MaxBufferError());
+			}
+		});
+	});
+
+	return stream.getBufferedValue();
+}
+
+module.exports = getStream;
+// TODO: Remove this for the next major release
+module.exports["default"] = getStream;
+module.exports.buffer = (stream, options) => getStream(stream, {...options, encoding: 'buffer'});
+module.exports.array = (stream, options) => getStream(stream, {...options, array: true});
+module.exports.MaxBufferError = MaxBufferError;
 
 
 /***/ }),
@@ -582,134 +710,6 @@ function createFromBuffer(buffer, options) {
 function createFromFd(fd, options) {
   return new FdSlicer(fd, options);
 }
-
-
-/***/ }),
-
-/***/ 59465:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-const {PassThrough: PassThroughStream} = __webpack_require__(2203);
-
-module.exports = options => {
-	options = {...options};
-
-	const {array} = options;
-	let {encoding} = options;
-	const isBuffer = encoding === 'buffer';
-	let objectMode = false;
-
-	if (array) {
-		objectMode = !(encoding || isBuffer);
-	} else {
-		encoding = encoding || 'utf8';
-	}
-
-	if (isBuffer) {
-		encoding = null;
-	}
-
-	const stream = new PassThroughStream({objectMode});
-
-	if (encoding) {
-		stream.setEncoding(encoding);
-	}
-
-	let length = 0;
-	const chunks = [];
-
-	stream.on('data', chunk => {
-		chunks.push(chunk);
-
-		if (objectMode) {
-			length = chunks.length;
-		} else {
-			length += chunk.length;
-		}
-	});
-
-	stream.getBufferedValue = () => {
-		if (array) {
-			return chunks;
-		}
-
-		return isBuffer ? Buffer.concat(chunks, length) : chunks.join('');
-	};
-
-	stream.getBufferedLength = () => length;
-
-	return stream;
-};
-
-
-/***/ }),
-
-/***/ 2700:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-const {constants: BufferConstants} = __webpack_require__(20181);
-const pump = __webpack_require__(32349);
-const bufferStream = __webpack_require__(59465);
-
-class MaxBufferError extends Error {
-	constructor() {
-		super('maxBuffer exceeded');
-		this.name = 'MaxBufferError';
-	}
-}
-
-async function getStream(inputStream, options) {
-	if (!inputStream) {
-		return Promise.reject(new Error('Expected a stream'));
-	}
-
-	options = {
-		maxBuffer: Infinity,
-		...options
-	};
-
-	const {maxBuffer} = options;
-
-	let stream;
-	await new Promise((resolve, reject) => {
-		const rejectPromise = error => {
-			// Don't retrieve an oversized buffer.
-			if (error && stream.getBufferedLength() <= BufferConstants.MAX_LENGTH) {
-				error.bufferedData = stream.getBufferedValue();
-			}
-
-			reject(error);
-		};
-
-		stream = pump(inputStream, bufferStream(options), error => {
-			if (error) {
-				rejectPromise(error);
-				return;
-			}
-
-			resolve();
-		});
-
-		stream.on('data', () => {
-			if (stream.getBufferedLength() > maxBuffer) {
-				rejectPromise(new MaxBufferError());
-			}
-		});
-	});
-
-	return stream.getBufferedValue();
-}
-
-module.exports = getStream;
-// TODO: Remove this for the next major release
-module.exports["default"] = getStream;
-module.exports.buffer = (stream, options) => getStream(stream, {...options, encoding: 'buffer'});
-module.exports.array = (stream, options) => getStream(stream, {...options, array: true});
-module.exports.MaxBufferError = MaxBufferError;
 
 
 /***/ }),
