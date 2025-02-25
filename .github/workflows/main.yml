@@ -75,13 +75,13 @@ jobs:
           screenshot: "java"
           
       - name: Upload screenshots
-        uses: actions/upload-artifact@@v4.6.1
+        uses: actions/upload-artifact@v4
         with:
           name: screenshot
           path: ${{ steps.customAction.outputs.screenshots_path}}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@@v4.6.1
+        uses: actions/upload-artifact@v4
         with:
           name: artifact
           path: ${{ steps.customAction.outputs.artifact_path}}
