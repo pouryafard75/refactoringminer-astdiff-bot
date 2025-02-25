@@ -1,9 +1,7 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const path = require('path');
-const puppeteer = require('puppeteer');
-
-
+const takeScreenshots = require('./utils/screenshot');
 const fs = require('fs');
 run();
 async function run() {
@@ -17,6 +15,7 @@ async function run() {
     console.log(`OAuthToken: ${oauthToken}`);
     console.log(`screenshot: ${screenshot}`);
     verifyInputs(url, oauthToken);
+    console.log('Inputs verified');
 
     function verifyInputs(url, oauthToken) {
         if (!url || url === undefined || url === '') {
@@ -48,17 +47,16 @@ async function run() {
         mkdir -p /diff/exported/web && \
         cp -r /tmp/refactoringminer/web /diff/exported/web/resources"`
       );
+    console.log('RefactoringMiner finished running');
 
     if (process.env.GITHUB_REPOSITORY !== undefined) {
       core.setOutput('artifact_path', `${process.env.GITHUB_WORKSPACE}/exportedFromDocker/`);
     }
 
     if (screenshot !== undefined && screenshot !== '') {
-      console.log('Installing Puppeteer...');
-      await exec.exec('npm install puppeteer@24.3.0');
-      await exec.exec('npx puppeteer browsers install chrome@133.0.6943.98');
-      console.log('Processing screenshot...');
-      await takeScreenshots(screenshot, diffDir);
+      console.log('Taking screenshots...');
+      const numberOfScreenshots = await takeScreenshots(screenshot, diffDir);
+      core.setOutput('numberOfScreenshots', numberOfScreenshots);
       if (process.env.GITHUB_REPOSITORY !== undefined) {
       core.setOutput('screenshots_path', `${process.env.GITHUB_WORKSPACE}/out/`);
       }
@@ -67,59 +65,4 @@ async function run() {
     core.setFailed(`Action failed with error: ${error.message}`);
   }
 }
-
-async function takeScreenshots(inputFilePath, exportDir, outputDir = 'out', infoFilePath = 'info.json') {
-  if (!inputFilePath || !exportDir) {
-      console.error('Error: Both input file path and export directory must be provided.');
-      return;
-  }
-
-  const pageNumbers = getMatchingIds(inputFilePath, exportDir, infoFilePath);
-  core.setOutput('numberOfScreenshots', pageNumbers.length);
-  if (pageNumbers.length === 0) {
-      console.log('No matching IDs found.');
-      return;
-  }
-
-  if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-  }
-
-  const getExportedMonacoUrl = (id) => `file://${exportDir}/web/monaco-page/${id}/index.html`;
-
-  console.log('Launching browser...');
-  const browser = await puppeteer.launch({
-      args: ['--no-sandbox']
-  });
-  const page = await browser.newPage();
-
-  await page.setViewport({ width: 1920, height: 1080 });
-  
-  index = 0;
-  for (const num of pageNumbers) {
-      index++;
-      const url = getExportedMonacoUrl(num);
-      console.log(`Navigating to: ${url}`);
-      await page.goto(url, { waitUntil: ['networkidle2', 'domcontentloaded', 'networkidle0']});
-      const screenshotPath = path.join(outputDir, `${index}.png`);
-      await page.screenshot({ path: screenshotPath, fullPage: true });
-      console.log(`Saved screenshot: ${screenshotPath}`);
-  }
-
-  await browser.close();
-}
-
-
-function getMatchingIds(inputString, exportDir, infoFilePath) {
-  console.log('Reading info.json...');
-  const data = fs.readFileSync(path.join(exportDir, "web", infoFilePath), 'utf8');
-  const jsonData = JSON.parse(data);
-  const matchingIds = [];
-  jsonData.diffInfos.forEach(item => {
-      if (item.srcPath.includes(inputString) || item.dstPath.includes(inputString)) {
-          matchingIds.push(item.id);
-      }
-  });
-  console.log('Matching IDs:', matchingIds);
-  return matchingIds;
-}
+module.exports = { run };
