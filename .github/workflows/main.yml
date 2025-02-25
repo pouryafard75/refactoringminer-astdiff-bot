@@ -28,7 +28,6 @@ jobs:
       - name: Run tests
         run: npm test
   build_dist:
-    if : false
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -62,7 +61,7 @@ jobs:
             )
 
   runAction:
-    needs: test
+    needs: build_dist
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
