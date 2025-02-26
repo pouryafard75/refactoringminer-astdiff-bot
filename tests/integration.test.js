@@ -1,7 +1,9 @@
 const takeScreenshots = require("../src/utils/screenshot");
 const path = require("path");
 const fs = require("fs");
-const run = require("../src/index");
+// const run = require("../src/index"); This is problematic as it executes the run() on the fly, since run() is invoked in the index.js
+// We need to extract the run into separate function and call it in the index.js to prevent the run() from being executed on the require
+// Test in this file will be skipped at the moment.
 
 const outFolder = "out2/";
 const artifactFolder = "artifact/";
@@ -20,7 +22,11 @@ describe("Integration Test", () => {
     });
 
     test.skip ("Test Integration", async () => {
-  
+      //Has been skipped due to the comment on the top of the file.
+      // Also the jest is complaining on importing puppee after the setup, which I dont know how to resolve.
+      
+      
+
       // test parameters
 
       process.env.GITHUB_WORKSPACE = process.cwd();
