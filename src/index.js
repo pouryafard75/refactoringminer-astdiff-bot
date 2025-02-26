@@ -4,7 +4,7 @@ const path = require('path');
 const takeScreenshots = require('./utils/screenshot');
 const fs = require('fs');
 run();
-async function run() {
+async function run(outdir = "out") { 
   try {
     // Get inputs
     const url = core.getInput('URL') || process.env.defaultURLValue;
@@ -59,7 +59,7 @@ async function run() {
       await exec.exec('npx', ['puppeteer', 'browsers', 'install', 'chrome@stable', "--install-deps=false"]);
 
       console.log('Taking screenshots...');
-      const numberOfScreenshots = await takeScreenshots(screenshot, diffDir);
+      const numberOfScreenshots = await takeScreenshots(screenshot, diffDir, outdir);
       core.setOutput('numberOfScreenshots', numberOfScreenshots);
       if (process.env.GITHUB_REPOSITORY !== undefined) {
       core.setOutput('screenshots_path', `${process.env.GITHUB_WORKSPACE}/out/`);
@@ -69,4 +69,4 @@ async function run() {
     core.setFailed(`Action failed with error: ${error.message}`);
   }
 }
-module.exports = { run };
+module.exports = run;
