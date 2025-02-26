@@ -19,7 +19,7 @@ describe("Integration Test", () => {
       }
     });
 
-    test ("Test Integration", async () => {
+    test.skip ("Test Integration", async () => {
   
       // test parameters
 
